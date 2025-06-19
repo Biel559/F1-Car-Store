@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Car Store - The Ultimate Formula 1 Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Animações para os cards dos pilotos */
+        .driver-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .driver-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animação de saída dos cards */
+        .driver-card.fade-out {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            pointer-events: none;
+        }
+
+        /* Vista detalhada do piloto */
+        .driver-detail-view {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .driver-detail-view.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animação para a imagem do piloto na vista detalhada */
+        .driver-detail-image {
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Botão de voltar */
+        .back-button {
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            background-color: #dc2626;
+        }
+
+        /* Estatísticas animadas */
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .flag-icon {
+            width: 30px;
+            height: 20px;
+            margin-right: 8px;
+            border: 1px solid #ddd;
+        }
+
+        /* Responsividade melhorada */
+        @media (max-width: 768px) {
+            .driver-detail-content {
+                flex-direction: column;
+            }
+
+            .driver-detail-image-container {
+                width: 100% !important;
+                max-width: 300px;
+                margin: 0 auto 2rem auto;
+            }
+        }
+
+
+        /* Animação de carregamento dos stats */
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-number {
+            animation: countUp 0.8s ease-out forwards;
+        }
+
+        /* ===== NOVAS ANIMAÇÕES PARA TEAMS ===== */
+
+        /* Animações para os cards das equipes */
+        .team-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animação de saída dos cards das equipes */
+        .team-card.fade-out {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            pointer-events: none;
+        }
+
+        /* Vista detalhada da equipe */
+        .team-detail-view {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .team-detail-view.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animação para a imagem da equipe na vista detalhada */
+        .team-detail-image {
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Responsividade para teams */
+        @media (max-width: 768px) {
+            .team-detail-content {
+                flex-direction: column;
+            }
+
+            .team-detail-image-container {
+                width: 100% !important;
+                max-width: 300px;
+                margin: 0 auto 2rem auto;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-[#0a090a] text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img src="f1carstorelogo3.png" alt="F1 Car Store Logo" class="w-20 h-20 rounded-full mr-3">
+                    <h1 class="text-2xl font-bold">F1 Car Store</h1>
+                </div>
+                <nav class="flex space-x-1 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                    <button onclick="showPage('home')"
+                        class="nav-item px-4 py-2 font-medium hover:text-red-500 transition active">Home</button>
+                    <button onclick="showPage('sales')"
+                        class="nav-item px-4 py-2 font-medium hover:text-red-500 transition">Sales</button>
+                    <button onclick="showPage('internal')"
+                        class="nav-item px-4 py-2 font-medium hover:text-red-500 transition">Internal Data</button>
+                    <button onclick="showPage('drivers')"
+                        class="nav-item px-4 py-2 font-medium hover:text-red-500 transition">Drivers</button>
+                    <button onclick="showPage('teams')"
+                        class="nav-item px-4 py-2 font-medium hover:text-red-500 transition">Teams</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div
+                    class="relative h-64 md:h-96 bg-gradient-to-r from-black to-red-900 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-black opacity-50"></div>
+                    <div class="relative z-10 text-center px-4">
+                        <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Welcome to F1 Car Store</h2>
+                        <p class="text-xl text-white">The Ultimate Formula 1 Experience</p>
+                    </div>
+                </div>
+                <div class="p-6 md:p-10">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Our Story</h3>
+                    <div class="prose max-w-none">
+                        <p class="text-gray-700 mb-4">
+                            Founded in 2005, F1 Car Store began as a passion project by former Formula 1 engineer
+                            Gabriel Campopiano Rosa. After years of working with top teams, Gabriel wanted to bring the
+                            thrill of Formula 1 to enthusiasts worldwide by offering authentic, race-ready vehicles.
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            What started as a small garage in Monaco has now grown into the world's premier destination
+                            for Formula 1 cars. We work directly with all 10 current F1 teams to source the most
+                            exclusive vehicles, from current season models to historic championship-winning cars.
+                        </p>
+                        <p class="text-gray-700 mb-6">
+                            Our mission is to preserve the engineering excellence of Formula 1 while making these
+                            incredible machines accessible to collectors and racing enthusiasts. Each vehicle in our
+                            inventory undergoes rigorous inspection and comes with full documentation of its racing
+                            history.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <div class="text-red-600 text-3xl mb-3">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <h4 class="font-bold text-lg mb-2">Championship Pedigree</h4>
+                                <p class="text-gray-600">We've sold over 50 championship-winning cars from legendary
+                                    seasons.</p>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <div class="text-red-600 text-3xl mb-3">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <h4 class="font-bold text-lg mb-2">Expert Maintenance</h4>
+                                <p class="text-gray-600">Our team includes 15 former F1 mechanics to keep your car in
+                                    peak condition.</p>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <div class="text-red-600 text-3xl mb-3">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <h4 class="font-bold text-lg mb-2">Global Network</h4>
+                                <p class="text-gray-600">We deliver to 35 countries with specialized F1 transport
+                                    solutions.</p>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 border-l-4 border-red-600 p-4">
+                            <p class="text-red-800 font-medium">"Owning an F1 car was always my dream. F1 Car Store made
+                                it happen with their exceptional service and expertise."</p>
+                            <p class="text-red-600 mt-2">- Lewis Hamilton, 7-time World Champion</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Page -->
+        <div id="sales" class="page">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-black text-white p-6">
+                    <h2 class="text-2xl font-bold">Sales Data</h2>
+                    <p class="text-gray-300">Track performance across all F1 teams</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <button onclick="filterSales('daily')"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition">Daily</button>
+                        <button onclick="filterSales('monthly')"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md transition">Monthly</button>
+                        <button onclick="filterSales('yearly')"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md transition">Yearly</button>
+                    </div>
+
+                    <div class="chart-container mb-8">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Team</th>
+                                    <th class="py-3 px-4 text-left">Cars Sold</th>
+                                    <th class="py-3 px-4 text-left">Revenue</th>
+                                    <th class="py-3 px-4 text-left">Avg. Price</th>
+                                    <th class="py-3 px-4 text-left">Top Model</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody" class="divide-y divide-gray-200">
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Internal Data Page -->
+        <div id="internal" class="page">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-black text-white p-6">
+                    <h2 class="text-2xl font-bold">Internal Data</h2>
+                    <p class="text-gray-300">Technical specifications and production metrics</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Engine Power (HP)</h3>
+                            <div class="chart-container">
+                                <canvas id="enginePowerChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Raw Materials Inventory</h3>
+                            <div class="chart-container">
+                                <canvas id="materialsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Production Statistics</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <div class="text-4xl font-bold text-red-600 mb-2" id="totalCars">0</div>
+                            <p class="text-gray-600">Total Cars Produced</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <div class="text-4xl font-bold text-red-600 mb-2" id="avgProduction">0</div>
+                            <p class="text-gray-600">Avg. Days per Car</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <div class="text-4xl font-bold text-red-600 mb-2" id="defectRate">0%</div>
+                            <p class="text-gray-600">Quality Defect Rate</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Team</th>
+                                    <th class="py-3 px-4 text-left">Engine Power</th>
+                                    <th class="py-3 px-4 text-left">Carbon Fiber (kg)</th>
+                                    <th class="py-3 px-4 text-left">Titanium (kg)</th>
+                                    <th class="py-3 px-4 text-left">Production Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody id="internalTableBody" class="divide-y divide-gray-200">
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drivers Gallery -->
+        <div id="drivers" class="page">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden mx-4 my-6">
+                <div class="bg-black text-white p-6">
+                    <h2 class="text-2xl font-bold">2025 Formula 1 Drivers</h2>
+                    <p class="text-gray-300">Meet the current grid of elite competitors</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                        id="driversContainer">
+                        <!-- Filled by JavaScript -->
+                    </div>
+
+                    <!-- Driver Detail View (Initially Hidden) -->
+                    <div id="driverDetailView" class="driver-detail-view hidden">
+                        <button onclick="closeDriverDetail()"
+                            class="back-button mb-6 bg-red-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 hover:bg-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span>Come back to drivers</span>
+                        </button>
+
+                        <div class="driver-detail-content flex flex-col lg:flex-row gap-8">
+                            <!-- Imagem do Piloto -->
+                            <div class="driver-detail-image-container w-full lg:w-1/3">
+                                <div class="bg-gradient-to-br from-gray-900 to-gray-700 rounded-xl p-8 text-center">
+                                    <img id="detailDriverImage" src="" alt=""
+                                        class="driver-detail-image w-full max-w-xs mx-auto rounded-lg shadow-2xl">
+                                    <div class="mt-6">
+                                        <div id="detailDriverNumber" class="text-6xl font-bold text-white mb-2"></div>
+                                        <h2 id="detailDriverName" class="text-3xl font-bold text-white mb-2"></h2>
+                                        <p id="detailDriverTeam" class="text-xl text-gray-300 mb-4"></p>
+                                        <div class="flex items-center justify-center">
+                                            <img id="detailDriverFlag" src="" class="flag-icon" alt="">
+                                            <span id="detailDriverCountry" class="text-gray-300"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Estatísticas e Informações -->
+                            <div class="w-full lg:w-2/3">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    <!-- Estatísticas de Carreira -->
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl">
+                                        <h3 class="text-lg font-semibold mb-4">Career Stats</h3>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between">
+                                                <span>Wins:</span>
+                                                <span id="detailGPWins" class="stat-number font-bold"></span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Championships:</span>
+                                                <span id="detailTitles" class="stat-number font-bold"></span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Podiums:</span>
+                                                <span id="detailPodiums" class="stat-number font-bold"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Informações Pessoais -->
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
+                                        <h3 class="text-lg font-semibold mb-4">Personal Details</h3>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between">
+                                                <span>Age:</span>
+                                                <span id="detailAge" class="stat-number font-bold"></span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>First entry in F1:</span>
+                                                <span id="detailDebut" class="stat-number font-bold"></span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Seasons:</span>
+                                                <span id="detailSeasons" class="stat-number font-bold"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Equipes Anteriores -->
+                                <div class="stat-card bg-white border border-gray-200 p-6 rounded-xl">
+                                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Team History</h3>
+                                    <div id="detailTeamHistory" class="flex flex-wrap gap-2">
+                                        <!-- Filled by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Gallery -->
+        <div id="teams" class="page">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-black text-white p-6">
+                    <h2 class="text-2xl font-bold">2025 Formula 1 Teams</h2>
+                    <p class="text-gray-300">The pinnacle of motorsport engineering</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="teamsContainer">
+                        <!-- Filled by JavaScript -->
+                    </div>
+
+                    <!-- Team Detail View - Hidden by default -->
+                    <div id="teamDetailView" class="team-detail-view" style="display: none;">
+                        <button onclick="backToTeams()"
+                            class="back-button bg-red-600 text-white px-6 py-2 rounded-lg mb-6 flex items-center hover:bg-red-700">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Voltar às Equipes
+                        </button>
+
+                        <div class="team-detail-content flex flex-col lg:flex-row gap-8">
+                            <!-- Team Image -->
+                            <div class="team-detail-image-container lg:w-1/3">
+                                <div id="teamDetailImageBg"
+                                    class="team-detail-image rounded-lg p-8 flex items-center justify-center min-h-[400px]">
+                                    <img id="teamDetailImage" src="" alt="" class="max-w-full max-h-64 object-contain">
+                                </div>
+                            </div>
+
+                            <!-- Team Info -->
+                            <div class="lg:w-2/3">
+                                <div class="mb-8">
+                                    <h2 id="teamDetailName" class="text-4xl font-bold mb-4"></h2>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                        <div class="flex items-center text-gray-700">
+                                            <i class="fas fa-map-marker-alt mr-3 text-lg"></i>
+                                            <span id="teamDetailBase" class="text-lg"></span>
+                                        </div>
+                                        <div class="flex items-center text-gray-700">
+                                            <i class="fas fa-user-tie mr-3 text-lg"></i>
+                                            <span id="teamDetailPrincipal" class="text-lg"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Statistics Grid -->
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-lg text-center">
+                                        <i class="fas fa-trophy text-2xl mb-2"></i>
+                                        <div class="stat-number text-3xl font-bold" id="teamGpWins">0</div>
+                                        <div class="text-sm opacity-90">GP Wins</div>
+                                    </div>
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-6 rounded-lg text-center">
+                                        <i class="fas fa-crown text-2xl mb-2"></i>
+                                        <div class="stat-number text-3xl font-bold" id="teamConstructorsChampionships">0
+                                        </div>
+                                        <div class="text-sm opacity-90">Constructors' Titles</div>
+                                    </div>
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg text-center">
+                                        <i class="fas fa-medal text-2xl mb-2"></i>
+                                        <div class="stat-number text-3xl font-bold" id="teamDriversChampionships">0
+                                        </div>
+                                        <div class="text-sm opacity-90">Drivers' Titles</div>
+                                    </div>
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-lg text-center">
+                                        <i class="fas fa-podium text-2xl mb-2"></i>
+                                        <div class="stat-number text-3xl font-bold" id="teamPodiums">0</div>
+                                        <div class="text-sm opacity-90">Podiums</div>
+                                    </div>
+                                    <div
+                                        class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg text-center">
+                                        <i class="fas fa-calendar-alt text-2xl mb-2"></i>
+                                        <div class="stat-number text-3xl font-bold" id="teamDebut">0</div>
+                                        <div class="text-sm opacity-90">First entry in F1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <img src="f1carstorelogo3.png" alt="F1 Car Store Logo" class="w-11 h-11 rounded-full mr-3">
+                        <span class="text-xl font-bold">F1 Car Store</span>
+                    </div>
+                    <p class="text-gray-400 mt-2">The Ultimate Formula 1 Experience</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 F1 Car Store — Gabriel Campopiano Rosa. All rights reserved.</p>
+                <p class="mt-2">This is a fictional website for demonstration purposes only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            // Initialize charts when their pages are shown
+            if (pageId === 'sales' && !window.salesChartInitialized) {
+                initSalesCharts();
+                window.salesChartInitialized = true;
+            }
+            if (pageId === 'internal' && !window.internalChartInitialized) {
+                initInternalCharts();
+                window.internalChartInitialized = true;
+            }
+            if (pageId === 'drivers' && !window.driversInitialized) {
+                loadDrivers();
+                window.driversInitialized = true;
+            }
+            if (pageId === 'teams' && !window.teamsInitialized) {
+                loadTeams();
+                window.teamsInitialized = true;
+            }
+        }
+
+        // Sales Data
+        const salesData = {
+            daily: {
+                labels: ['Red Bull', 'Ferrari', 'Mercedes', 'McLaren', 'Aston Martin', 'Alpine', 'Williams', 'Racing Bulls', 'Kick Sauber', 'Haas'],
+                data: [7, 6, 5, 8, 3, 1, 4, 1, 1, 2],
+                revenue: [17500000, 15000000, 12500000, 20000000, 7500000, 2500000, 10000000, 2500000, 2500000, 5000000],
+                avgPrice: [2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000],
+                topModel: ['RB21', 'SF-25', 'W16', 'MCL39', 'AMR25', 'A525', 'FW47', 'VCARB 02', 'C45', 'VF-25']
+            },
+            monthly: {
+                labels: ['Red Bull', 'Ferrari', 'Mercedes', 'McLaren', 'Aston Martin', 'Alpine', 'Williams', 'Racing Bulls', 'Kick Sauber', 'Haas'],
+                data: [30, 25, 22, 35, 15, 8, 18, 5, 6, 12],
+                revenue: [75000000, 62500000, 55000000, 87500000, 37500000, 20000000, 45000000, 12500000, 15000000, 30000000],
+                avgPrice: [2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000],
+                topModel: ['RB21', 'SF-25', 'W16', 'MCL39', 'AMR25', 'A525', 'FW47', 'VCARB 02', 'C45', 'VF-25']
+            },
+            yearly: {
+                labels: ['Red Bull', 'Ferrari', 'Mercedes', 'McLaren', 'Aston Martin', 'Alpine', 'Williams', 'Racing Bulls', 'Kick Sauber', 'Haas'],
+                data: [160, 140, 120, 180, 85, 55, 100, 35, 45, 70],
+                revenue: [400000000, 350000000, 300000000, 450000000, 212500000, 137500000, 250000000, 87500000, 112500000, 175000000],
+                avgPrice: [2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000, 2500000],
+                topModel: ['RB21', 'SF-25', 'W16', 'MCL39', 'AMR25', 'A525', 'FW47', 'VCARB 02', 'C45', 'VF-25']
+            }
+        };
+
+        let salesChart;
+        let enginePowerChart;
+        let materialsChart;
+
+        function initSalesCharts() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: salesData.daily.labels,
+                    datasets: [{
+                        label: 'Cars Sold',
+                        data: salesData.daily.data,
+                        backgroundColor: [
+                            'rgba(6, 0, 239, 0.7)',
+                            'rgba(237, 28, 36, 0.7)',
+                            'rgba(0, 210, 190, 0.7)',
+                            'rgba(255, 135, 0, 0.7)',
+                            'rgba(0, 111, 98, 0.7)',
+                            'rgba(0, 114, 181, 0.7)',
+                            'rgba(0, 90, 171, 0.7)',
+                            'rgba(21, 52, 204, 0.7)',
+                            'rgba(0, 231, 1, 0.7)',
+                            'rgba(138, 138, 138, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(6, 0, 239, 1)',
+                            'rgba(237, 28, 36, 1)',
+                            'rgba(0, 210, 190, 1)',
+                            'rgba(255, 135, 0, 1)',
+                            'rgba(0, 111, 98, 1)',
+                            'rgba(0, 114, 181, 1)',
+                            'rgba(0, 90, 171, 1)',
+                            'rgba(21, 52, 204, 1)',
+                            'rgba(0, 231, 1, 1)',
+                            'rgba(138, 138, 138, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Cars Sold'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'F1 Teams'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Sales by Team',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            updateSalesTable('daily');
+        }
+
+        function filterSales(timeframe) {
+            salesChart.data.labels = salesData[timeframe].labels;
+            salesChart.data.datasets[0].data = salesData[timeframe].data;
+
+            let title;
+            switch (timeframe) {
+                case 'daily':
+                    title = 'Daily Sales by Team';
+                    break;
+                case 'monthly':
+                    title = 'Monthly Sales by Team';
+                    break;
+                case 'yearly':
+                    title = 'Annual Sales by Team';
+                    break;
+            }
+
+            salesChart.options.plugins.title.text = title;
+            salesChart.update();
+
+            updateSalesTable(timeframe);
+
+            // Update active button
+            document.querySelectorAll('#sales button').forEach(btn => {
+                if (btn.textContent.toLowerCase() === timeframe) {
+                    btn.classList.remove('bg-gray-200', 'text-gray-800');
+                    btn.classList.add('bg-red-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-red-600', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-800');
+                }
+            });
+        }
+
+        function updateSalesTable(timeframe) {
+            const tableBody = document.getElementById('salesTableBody');
+            tableBody.innerHTML = '';
+
+            for (let i = 0; i < salesData[timeframe].labels.length; i++) {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+
+                row.innerHTML = `
+                    <td class="py-4 px-4">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full mr-2" style="background-color: ${salesChart.data.datasets[0].backgroundColor[i]}"></div>
+                            ${salesData[timeframe].labels[i]}
+                        </div>
+                    </td>
+                    <td class="py-4 px-4">${salesData[timeframe].data[i]}</td>
+                    <td class="py-4 px-4">$${salesData[timeframe].revenue[i].toLocaleString()}</td>
+                    <td class="py-4 px-4">$${salesData[timeframe].avgPrice[i].toLocaleString()}</td>
+                    <td class="py-4 px-4">${salesData[timeframe].topModel[i]}</td>
+                `;
+
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Internal Data
+        function initInternalCharts() {
+            const enginePowerCtx = document.getElementById('enginePowerChart').getContext('2d');
+            enginePowerChart = new Chart(enginePowerCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Red Bull', 'Williams', 'Mercedes', 'McLaren', 'Kick Sauber', 'Alpine', 'Ferrari', 'Haas', 'Aston Martin', 'Racing Bulls'],
+                    datasets: [{
+                        label: 'Engine Power (HP)',
+                        data: [1018, 1015, 1020, 1022, 1008, 1005, 1016, 1012, 1010, 1014],
+                        backgroundColor: 'rgba(229, 62, 62, 0.7)',
+                        borderColor: 'rgba(229, 62, 62, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 1000,
+                            title: {
+                                display: true,
+                                text: 'Horsepower'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Engine Power by Team',
+                            font: {
+                                size: 18
+                            }
+                        }
+                    }
+                }
+            });
+
+            const materialsCtx = document.getElementById('materialsChart').getContext('2d');
+            materialsChart = new Chart(materialsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Carbon Fiber', 'Titanium', 'Aluminum', 'Steel', 'Other'],
+                    datasets: [{
+                        data: [45, 25, 15, 10, 5],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Raw Materials Inventory',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // Update production stats
+            document.getElementById('totalCars').textContent = '1,250';
+            document.getElementById('avgProduction').textContent = '14';
+            document.getElementById('defectRate').textContent = '1.2%';
+
+            // Update internal data table
+            const internalData = [
+                { team: 'Red Bull', power: 1018, carbon: 4300, titanium: 2400, rate: '97.5%' },
+                { team: 'Williams', power: 1015, carbon: 4200, titanium: 2300, rate: '97%' },
+                { team: 'Mercedes', power: 1020, carbon: 4500, titanium: 2500, rate: '98%' },
+                { team: 'McLaren', power: 1022, carbon: 4600, titanium: 2600, rate: '98.5%' },
+                { team: 'Kick Sauber', power: 1008, carbon: 3800, titanium: 2000, rate: '96%' },
+                { team: 'Alpine', power: 1005, carbon: 3600, titanium: 1850, rate: '95%' },
+                { team: 'Ferrari', power: 1016, carbon: 4000, titanium: 2200, rate: '97.2%' },
+                { team: 'Haas', power: 1012, carbon: 3900, titanium: 2100, rate: '96.8%' },
+                { team: 'Aston Martin', power: 1010, carbon: 3850, titanium: 2050, rate: '96.2%' },
+                { team: 'Racing Bulls', power: 1014, carbon: 3950, titanium: 2150, rate: '96.5%' }
+            ];
+
+            const tableBody = document.getElementById('internalTableBody');
+            tableBody.innerHTML = '';
+
+            internalData.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+
+                row.innerHTML = `
+            <td class="py-4 px-4">${item.team}</td>
+            <td class="py-4 px-4">${item.power} HP</td>
+            <td class="py-4 px-4">${item.carbon.toLocaleString()}</td>
+            <td class="py-4 px-4">${item.titanium.toLocaleString()}</td>
+            <td class="py-4 px-4">${item.rate}</td>
+        `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Drivers Data
+        // Dados detalhados dos pilotos
+        const driversDetailedData = {
+            'Max Verstappen': { gpWins: 65, titles: 4, podiums: 117, age: 27, debut: 2015, teams: ['Toro Rosso', 'Red Bull Racing'] },
+            'Yuki Tsunoda': { gpWins: 0, titles: 0, podiums: 0, age: 25, debut: 2021, teams: ['AlphaTauri', 'Racing Bulls', 'Red Bull Racing'] },
+            'Charles Leclerc': { gpWins: 8, titles: 0, podiums: 46, age: 27, debut: 2018, teams: ['Sauber', 'Ferrari'] },
+            'Lewis Hamilton': { gpWins: 105, titles: 7, podiums: 202, age: 40, debut: 2007, teams: ['McLaren', 'Mercedes', 'Ferrari'] },
+            'Kimi Antonelli': { gpWins: 0, titles: 0, podiums: 1, age: 18, debut: 2025, teams: ['Mercedes'] },
+            'George Russell': { gpWins: 4, titles: 0, podiums: 20, age: 27, debut: 2019, teams: ['Williams', 'Mercedes'] },
+            'Lando Norris': { gpWins: 6, titles: 0, podiums: 34, age: 25, debut: 2019, teams: ['McLaren'] },
+            'Oscar Piastri': { gpWins: 7, titles: 0, podiums: 18, age: 24, debut: 2023, teams: ['McLaren'] },
+            'Fernando Alonso': { gpWins: 32, titles: 2, podiums: 106, age: 43, debut: 2001, teams: ['Minardi', 'McLaren', 'Renault', 'Ferrari', 'Aston Martin'] },
+            'Lance Stroll': { gpWins: 0, titles: 0, podiums: 3, age: 26, debut: 2017, teams: ['Williams', 'Racing Point', 'Aston Martin'] },
+            'Pierre Gasly': { gpWins: 1, titles: 0, podiums: 4, age: 28, debut: 2017, teams: ['Toro Rosso', 'Red Bull Racing', 'AlphaTauri', 'Alpine'] },
+            'Franco Colapinto': { gpWins: 0, titles: 0, podiums: 0, age: 21, debut: 2024, teams: ['Williams', 'Alpine'] },
+            'Alexander Albon': { gpWins: 0, titles: 0, podiums: 2, age: 29, debut: 2019, teams: ['Toro Rosso', 'Red Bull Racing', 'Williams'] },
+            'Carlos Sainz': { gpWins: 4, titles: 0, podiums: 27, age: 30, debut: 2015, teams: ['Toro Rosso', 'Renault', 'McLaren', 'Ferrari', 'Williams'] },
+            'Liam Lawson': { gpWins: 0, titles: 0, podiums: 0, age: 23, debut: 2023, teams: ['AlphaTauri', 'Racing Bulls'] },
+            'Isack Hadjar': { gpWins: 0, titles: 0, podiums: 0, age: 20, debut: 2025, teams: ['Racing Bulls'] },
+            'Nico Hülkenberg': { gpWins: 0, titles: 0, podiums: 0, age: 37, debut: 2010, teams: ['Williams', 'Force India', 'Sauber', 'Renault', 'Racing Point', 'Aston Martin', 'Haas', 'Kick Sauber'] },
+            'Gabriel Bortoleto': { gpWins: 0, titles: 0, podiums: 0, age: 20, debut: 2025, teams: ['Kick Sauber'] },
+            'Esteban Ocon': { gpWins: 1, titles: 0, podiums: 4, age: 28, debut: 2016, teams: ['Manor', 'Force India', 'Racing Point', 'Renault', 'Alpine', 'Haas'] },
+            'Oliver Bearman': { gpWins: 0, titles: 0, podiums: 0, age: 20, debut: 2024, teams: ['Ferrari', 'Haas'] }
+        };
+
+        // Drivers Data
+        function loadDrivers() {
+            const drivers = [
+                { number: 1, name: 'Max Verstappen', team: 'Red Bull Racing', country: 'Netherlands', image: 'verstappen.png' },
+                { number: 22, name: 'Yuki Tsunoda', team: 'Red Bull Racing', country: 'Japan', image: 'tsunoda.png' },
+                { number: 16, name: 'Charles Leclerc', team: 'Ferrari', country: 'Monaco', image: 'leclerc.png' },
+                { number: 44, name: 'Lewis Hamilton', team: 'Ferrari', country: 'United Kingdom', image: 'hamilton.png' },
+                { number: 12, name: 'Kimi Antonelli', team: 'Mercedes', country: 'Italy', image: 'antonelli.png' },
+                { number: 63, name: 'George Russell', team: 'Mercedes', country: 'United Kingdom', image: 'russell.png' },
+                { number: 4, name: 'Lando Norris', team: 'McLaren', country: 'United Kingdom', image: 'norris.png' },
+                { number: 81, name: 'Oscar Piastri', team: 'McLaren', country: 'Australia', image: 'piastri.png' },
+                { number: 14, name: 'Fernando Alonso', team: 'Aston Martin', country: 'Spain', image: 'alonso.png' },
+                { number: 18, name: 'Lance Stroll', team: 'Aston Martin', country: 'Canada', image: 'stroll.png' },
+                { number: 10, name: 'Pierre Gasly', team: 'Alpine', country: 'France', image: 'gasly.png' },
+                { number: 43, name: 'Franco Colapinto', team: 'Alpine', country: 'Argentina', image: 'colapinto.png' },
+                { number: 23, name: 'Alexander Albon', team: 'Williams', country: 'Thailand', image: 'albon.png' },
+                { number: 55, name: 'Carlos Sainz', team: 'Williams', country: 'Spain', image: 'sainz.png' },
+                { number: 30, name: 'Liam Lawson', team: 'Racing Bulls', country: 'New Zealand', image: 'lawson.png' },
+                { number: 6, name: 'Isack Hadjar', team: 'Racing Bulls', country: 'France', image: 'hadjar.png' },
+                { number: 27, name: 'Nico Hülkenberg', team: 'Kick Sauber', country: 'Germany', image: 'hulkenberg.png' },
+                { number: 5, name: 'Gabriel Bortoleto', team: 'Kick Sauber', country: 'Brazil', image: 'bortoleto.png' },
+                { number: 31, name: 'Esteban Ocon', team: 'Haas', country: 'France', image: 'ocon.png' },
+                { number: 87, name: 'Oliver Bearman', team: 'Haas', country: 'United Kingdom', image: 'bearman.png' }
+            ];
+
+            const container = document.getElementById('driversContainer');
+            container.innerHTML = '';
+
+            drivers.forEach(driver => {
+                const card = document.createElement('div');
+                card.className = 'driver-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300';
+                card.onclick = () => showDriverDetail(driver);
+
+                // Get team color
+                let teamColor;
+                switch (driver.team) {
+                    case 'Red Bull Racing': teamColor = 'bg-blue-900'; break;
+                    case 'Ferrari': teamColor = 'bg-red-600'; break;
+                    case 'Mercedes': teamColor = 'bg-teal-400'; break;
+                    case 'McLaren': teamColor = 'bg-orange-500'; break;
+                    case 'Aston Martin': teamColor = 'bg-green-700'; break;
+                    case 'Alpine': teamColor = 'bg-blue-600'; break;
+                    case 'Williams': teamColor = 'bg-blue-800'; break;
+                    case 'Racing Bulls': teamColor = 'bg-[#1534cc]'; break;
+                    case 'Kick Sauber': teamColor = 'bg-[#00e701]'; break;
+                    case 'Haas': teamColor = 'bg-gray-500'; break;
+                }
+
+                card.innerHTML = `
+                    <div class="relative">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <img src="${driver.image}" alt="${driver.name}" class="h-full object-contain">
+                        </div>
+                        <div class="absolute top-2 left-2 ${teamColor} text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                            ${driver.number}
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1">${driver.name}</h3>
+                        <p class="text-gray-600 text-sm mb-2">${driver.team}</p>
+                        <div class="flex items-center">
+                            <img src="https://flagcdn.com/w40/${getCountryCode(driver.country)}.png" class="flag-icon" alt="${driver.country} flag">
+                            <span class="text-gray-700">${driver.country}</span>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // Show driver detail view
+        function showDriverDetail(driver) {
+            // Adicionar animação de fade-out aos outros cards
+            const driverCards = document.querySelectorAll('.driver-card');
+            driverCards.forEach(card => {
+                card.classList.add('fade-out');
+            });
+
+            // Aguardar a animação de fade-out antes de mostrar os detalhes
+            setTimeout(() => {
+                // Esconder container dos cards (ID CORRETO)
+                document.getElementById('driversContainer').style.display = 'none';
+
+                // Preencher dados do piloto
+                document.getElementById('detailDriverImage').src = driver.image;
+                document.getElementById('detailDriverImage').alt = driver.name;
+                document.getElementById('detailDriverNumber').textContent = driver.number; // textContent, não src
+                document.getElementById('detailDriverName').textContent = driver.name;
+                document.getElementById('detailDriverTeam').textContent = driver.team;
+                document.getElementById('detailDriverFlag').src = `https://flagcdn.com/w40/${getCountryCode(driver.country)}.png`;
+                document.getElementById('detailDriverCountry').textContent = driver.country;
+
+                // Preencher estatísticas detalhadas
+                const detailedData = driversDetailedData[driver.name];
+                if (detailedData) {
+                    animateNumber('detailGPWins', detailedData.gpWins);
+                    animateNumber('detailTitles', detailedData.titles);
+                    animateNumber('detailPodiums', detailedData.podiums);
+                    animateNumber('detailAge', detailedData.age);
+                    animateNumber('detailDebut', detailedData.debut);
+                    // Calcular temporadas corretamente
+                    const currentYear = new Date().getFullYear();
+                    const seasons = currentYear - detailedData.debut + 1;
+                    animateNumber('detailSeasons', seasons);
+                }
+
+                // Preencher histórico de equipes (VARIÁVEIS CORRIGIDAS)
+                const detailTeamHistory = document.getElementById('detailTeamHistory');
+                detailTeamHistory.innerHTML = '';
+
+                // Verificar se o piloto tem histórico de equipes
+                if (detailedData && detailedData.teams) {
+                    detailedData.teams.forEach(team => {
+                        const badge = document.createElement('span');
+                        badge.className = 'px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm border';
+                        badge.textContent = team;
+                        detailTeamHistory.appendChild(badge);
+                    });
+                } else {
+                    // Se não tiver dados de equipes, mostrar apenas a equipe atual
+                    const badge = document.createElement('span');
+                    badge.className = 'px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm border';
+                    badge.textContent = driver.team;
+                    detailTeamHistory.appendChild(badge);
+                }
+
+                // Mostrar vista detalhada (REMOVER CLASSE HIDDEN)
+                const detailView = document.getElementById('driverDetailView');
+                detailView.classList.remove('hidden');
+                detailView.style.display = 'block';
+
+                // Trigger da animação de entrada
+                setTimeout(() => {
+                    detailView.classList.add('show');
+                }, 50);
+
+            }, 400); // Tempo da animação de fade-out
+        }
+
+        // Close driver detail view
+        function closeDriverDetail() {
+            const detailView = document.getElementById('driverDetailView');
+
+            // Animação de saída
+            detailView.classList.remove('show');
+
+            setTimeout(() => {
+                // Esconder vista detalhada
+                detailView.style.display = 'none';
+                detailView.classList.add('hidden'); // Adicionar classe hidden de volta
+
+                // Mostrar container dos cards novamente
+                document.getElementById('driversContainer').style.display = 'grid';
+
+                // Remover classes de fade-out
+                const driverCards = document.querySelectorAll('.driver-card');
+                driverCards.forEach(card => {
+                    card.classList.remove('fade-out');
+                });
+
+                // Recarregar os cards
+                loadDrivers();
+
+            }, 600); // Tempo da animação de saída
+        }
+
+        // Get country code for flag
+        function getCountryCode(country) {
+            const countryCodes = {
+                'Netherlands': 'nl', 'Japan': 'jp', 'Monaco': 'mc', 'United Kingdom': 'gb',
+                'Italy': 'it', 'Australia': 'au', 'Spain': 'es', 'Canada': 'ca',
+                'France': 'fr', 'Argentina': 'ar', 'Thailand': 'th', 'New Zealand': 'nz',
+                'Germany': 'de', 'Brazil': 'br'
+            };
+            return countryCodes[country] || 'un';
+        }
+
+        const teamsDetailedData = {
+            'Red Bull Racing': { gpWins: 124, constructors_championships: 6, drivers_championships: 8, podiums: 287, debut: 2005 },
+            'Ferrari': { gpWins: 248, constructors_championships: 16, drivers_championships: 15, podiums: 832, debut: 1950 },
+            'Mercedes': { gpWins: 130, constructors_championships: 8, drivers_championships: 9, podiums: 304, debut: 1954 },
+            'McLaren': { gpWins: 196, constructors_championships: 9, drivers_championships: 12, podiums: 540, debut: 1966 },
+            'Aston Martin': { gpWins: 0, constructors_championships: 0, drivers_championships: 0, podiums: 9, debut: 1959 },
+            'Alpine': { gpWins: 36, constructors_championships: 2, drivers_championships: 2, podiums: 107, debut: 1977 },
+            'Williams': { gpWins: 114, constructors_championships: 7, drivers_championships: 9, podiums: 313, debut: 1977 },
+            'Racing Bulls': { gpWins: 2, constructors_championships: 0, drivers_championships: 0, podiums: 5, debut: 2006 },
+            'Kick Sauber': { gpWins: 1, constructors_championships: 0, drivers_championships: 0, podiums: 27, debut: 1993 },
+            'Haas': { gpWins: 0, constructors_championships: 0, drivers_championships: 0, podiums: 0, debut: 2016 }
+        };
+
+        function loadTeams() {
+            const teams = [
+                { name: 'Red Bull Racing', base: 'Milton Keynes, UK', principal: 'Christian Horner', championships: 6, color: 'bg-blue-900', image: 'redbull.png' },
+                { name: 'Ferrari', base: 'Maranello, Italy', principal: 'Frédéric Vasseur', championships: 16, color: 'bg-red-600', image: 'ferrari.png' },
+                { name: 'Mercedes', base: 'Brackley, UK', principal: 'Toto Wolff', championships: 8, color: 'bg-teal-400', image: 'mercedes.png' },
+                { name: 'McLaren', base: 'Woking, UK', principal: 'Andrea Stella', championships: 9, color: 'bg-orange-500', image: 'mclaren.png' },
+                { name: 'Aston Martin', base: 'Silverstone, UK', principal: 'Andy Cowell', championships: 0, color: 'bg-green-700', image: 'astonmartin.png' },
+                { name: 'Alpine', base: 'Enstone, UK', principal: 'Flavio Briatore', championships: 2, color: 'bg-blue-600', image: 'alpine.png' },
+                { name: 'Williams', base: 'Grove, UK', principal: 'James Vowles', championships: 9, color: 'bg-blue-800', image: 'williams.png' },
+                { name: 'Racing Bulls', base: 'Faenza, Italy', principal: 'Laurent Mekies', championships: 0, color: 'bg-[#1534cc]', image: 'racingbulls.png' },
+                { name: 'Kick Sauber', base: 'Hinwil, Switzerland', principal: 'Jonathan Wheatley', championships: 0, color: 'bg-[#00e701]', image: 'kicksauber.png' },
+                { name: 'Haas', base: 'Kannapolis, USA', principal: 'Ayao Komatsu', championships: 0, color: 'bg-gray-500', image: 'haas.png' }
+            ];
+
+            const container = document.getElementById('teamsContainer');
+            container.innerHTML = '';
+
+            teams.forEach(team => {
+                const card = document.createElement('div');
+                card.className = 'team-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300';
+                card.onclick = () => showTeamDetail(team);
+
+                card.innerHTML = `
+                    <div class="h-48 ${team.color} flex items-center justify-center">
+                        <img src="${team.image}" alt="${team.name} logo" class="h-32 object-contain">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">${team.name}</h3>
+                        <div class="flex items-center text-gray-600 mb-1">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>${team.base}</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 mb-1">
+                            <i class="fas fa-user-tie mr-2"></i>
+                            <span>${team.principal}</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 mb-4">
+                            <i class="fas fa-trophy mr-2"></i>
+                            <span>${team.championships} Constructors' Championships</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">V6 Turbo</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Hybrid</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">1.6L</span>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function showTeamDetail(team) {
+            // Adicionar animação de fade-out aos outros cards
+            const teamCards = document.querySelectorAll('.team-card');
+            teamCards.forEach(card => {
+                card.classList.add('fade-out');
+            });
+
+            // Aguardar a animação de fade-out antes de mostrar os detalhes
+            setTimeout(() => {
+                // Esconder container dos cards
+                document.getElementById('teamsContainer').style.display = 'none';
+
+                // Preencher dados da equipe
+                document.getElementById('teamDetailName').textContent = team.name;
+                document.getElementById('teamDetailBase').textContent = team.base;
+                document.getElementById('teamDetailPrincipal').textContent = team.principal;
+                document.getElementById('teamDetailImage').src = team.image;
+                document.getElementById('teamDetailImage').alt = team.name + ' logo';
+
+                // Aplicar cor de fundo
+                const imageContainer = document.getElementById('teamDetailImageBg');
+                imageContainer.className = `team-detail-image rounded-lg p-8 flex items-center justify-center min-h-[400px] ${team.color}`;
+
+                // Preencher estatísticas detalhadas
+                const detailedData = teamsDetailedData[team.name];
+                if (detailedData) {
+                    animateNumber('teamGpWins', detailedData.gpWins);
+                    animateNumber('teamConstructorsChampionships', detailedData.constructors_championships);
+                    animateNumber('teamDriversChampionships', detailedData.drivers_championships);
+                    animateNumber('teamPodiums', detailedData.podiums);
+                    animateNumber('teamDebut', detailedData.debut);
+                    animateNumber('teamCurrentChampionships', team.championships);
+                }
+
+                // Mostrar vista detalhada
+                const detailView = document.getElementById('teamDetailView');
+                detailView.style.display = 'block';
+
+                // Trigger da animação de entrada
+                setTimeout(() => {
+                    detailView.classList.add('show');
+                }, 50);
+
+            }, 400); // Tempo da animação de fade-out
+        }
+
+        function backToTeams() {
+            const detailView = document.getElementById('teamDetailView');
+
+            // Animação de saída
+            detailView.classList.remove('show');
+
+            setTimeout(() => {
+                // Esconder vista detalhada
+                detailView.style.display = 'none';
+
+                // Mostrar container dos cards novamente
+                document.getElementById('teamsContainer').style.display = 'grid';
+
+                // Remover classes de fade-out e recarregar teams
+                const teamCards = document.querySelectorAll('.team-card');
+                teamCards.forEach(card => {
+                    card.classList.remove('fade-out');
+                });
+
+                // Recarregar os cards
+                loadTeams();
+
+            }, 600); // Tempo da animação de saída
+        }
+
+        function animateNumber(elementId, targetNumber) {
+            const element = document.getElementById(elementId);
+            const startNumber = 0;
+            const duration = 1500; // 1.5 segundos
+            const startTime = performance.now();
+
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function para suavizar a animação
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const currentNumber = Math.floor(startNumber + (targetNumber - startNumber) * easeOutQuart);
+
+                element.textContent = currentNumber.toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                } else {
+                    element.textContent = targetNumber.toLocaleString();
+                }
+            }
+
+            requestAnimationFrame(updateNumber);
+        }
+
+        // Helper function to get country code for flags
+        function getCountryCode(country) {
+            const codes = {
+                'Netherlands': 'nl',
+                'Mexico': 'mx',
+                'Monaco': 'mc',
+                'Spain': 'es',
+                'United Kingdom': 'gb',
+                'Australia': 'au',
+                'Canada': 'ca',
+                'France': 'fr',
+                'Thailand': 'th',
+                'United States': 'us',
+                'Japan': 'jp',
+                'Finland': 'fi',
+                'China': 'cn',
+                'Denmark': 'dk',
+                'Germany': 'de',
+                'Brazil': 'br',
+                'Argentina': 'ar',
+                'New Zealand': 'nz',
+                'Italy': 'it',
+            };
+            return codes[country] || 'un';
+        }
+
+        // Initialize the first page
+        document.addEventListener('DOMContentLoaded', function () {
+            initSalesCharts();
+            initInternalCharts();
+            loadDrivers();
+            loadTeams();
+        });
+    </script>
+</body>
+
+</html>
